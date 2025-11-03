@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Web</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+  <h2>Simple Chat</h2>
+
+  <div id="login">
+    <input id="username" placeholder="Enter your username" />
+    <button onclick="login()">Login</button>
+  </div>
+
+  <div id="chat" style="display:none;">
+    <ul id="messages"></ul>
+    <input id="message" autocomplete="off" placeholder="Type message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    var socket = io();
+    var username = "";
+
+    socket.on('message', function(data) {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${data.username}</strong>: ${data.msg}`;
+      document.getElementById("messages").appendChild(li);
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById("message").value.trim();
+      if (msg) {
+        socket.emit('message', { username: username, msg: msg });
+        document.getElementById("message").value = '';
+      }
+    }
+
+    function login(){
+      username = document.getElementById("username").value.trim();
+      if(username){
+        socket.emit('login', username);
+        document.getElementById("login").style.display = 'none';
+        document.getElementById("chat").style.display = 'block';
+      }
+    }
+  </script>
+</body>
+</html>
